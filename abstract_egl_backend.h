@@ -60,6 +60,11 @@ protected:
     void setConfig(const EGLConfig &config) {
         m_config = config;
     }
+#if HAVE_LIBHYBRIS_EXT
+    void setContext(const EGLContext &context) {
+        m_context = context;
+    }
+#endif
     void cleanup();
     virtual void cleanupSurfaces();
     bool initEglAPI();

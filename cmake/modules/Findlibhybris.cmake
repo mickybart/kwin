@@ -46,6 +46,7 @@ if(NOT WIN32)
     pkg_check_modules(PKG_androidheaders QUIET android-headers)
     pkg_check_modules(PKG_hwcomposerwindow QUIET hwcomposer-egl)
     pkg_check_modules(PKG_hybriseglplatform QUIET hybris-egl-platform)
+    pkg_check_modules(PKG_surfaceflinger QUIET libsf)
 
     set(libhardware_DEFINITIONS ${PKG_libhardware_CFLAGS_OTHER})
     set(libhardware_VERSION ${PKG_libhardware_VERSION})
@@ -125,6 +126,47 @@ if(NOT WIN32)
     endif()
 
     mark_as_advanced(libhwcomposer_LIBRARY libhwcomposer_INCLUDE_DIR)
+    
+    ##############################################
+    # SurfaceFlinger
+    ##############################################
+    set(libsf_DEFINITIONS ${PKG_surfaceflinger_CFLAGS_OTHER})
+    set(libsf_VERSION ${PKG_surfaceflinger_VERSION})
+
+    find_library(libsf_LIBRARY
+        NAMES
+            libsf.so
+        HINTS
+            ${PKG_surfaceflinger_LIBRARY_DIRS}
+    )
+    find_path(libsf_INCLUDE_DIR
+        NAMES
+            surface_flinger_compatibility_layer.h
+        HINTS
+            ${PKG_surfaceflinger_INCLUDE_DIRS}
+    )
+
+    include(FindPackageHandleStandardArgs)
+    find_package_handle_standard_args(libsf
+        FOUND_VAR
+            libsf_FOUND
+        REQUIRED_VARS
+            libsf_LIBRARY
+            libsf_INCLUDE_DIR
+        VERSION_VAR
+            libsf_VERSION
+    )
+
+    if(libsf_FOUND AND NOT TARGET libhybris::libsf)
+        add_library(libhybris::libsf UNKNOWN IMPORTED)
+        set_target_properties(libhybris::libsf PROPERTIES
+            IMPORTED_LOCATION "${libsf_LIBRARY}"
+            INTERFACE_COMPILE_OPTIONS "${libsf_DEFINITIONS}"
+            INTERFACE_INCLUDE_DIRECTORIES "${libsf_INCLUDE_DIR}"
+        )
+    endif()
+
+    mark_as_advanced(libsf_LIBRARY libsf_INCLUDE_DIR)
 
     ##############################################
     # hybriseglplatform
@@ -172,10 +214,16 @@ if(NOT WIN32)
     else()
         set(libhybris_FOUND FALSE)
     endif()
+    if(libhardware_FOUND AND libhwcomposer_FOUND AND hybriseglplatform_FOUND AND libsf_FOUND)
+        set(libhybris_ext_FOUND TRUE)
+    else()
+        set(libhybris_ext_FOUND FALSE)
+    endif()
 
 else()
     message(STATUS "Findlibhardware.cmake cannot find libhybris on Windows systems.")
     set(libhybris_FOUND FALSE)
+    set(libhybris_ext_FOUND FALSE)
 endif()
 
 include(FeatureSummary)

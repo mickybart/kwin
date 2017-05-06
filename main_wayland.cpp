@@ -382,6 +382,9 @@ static const QString s_drmPlugin = QStringLiteral("KWinWaylandDrmBackend");
 #if HAVE_LIBHYBRIS
 static const QString s_hwcomposerPlugin = QStringLiteral("KWinWaylandHwcomposerBackend");
 #endif
+#if HAVE_LIBHYBRIS_EXT
+static const QString s_surfaceflingerPlugin = QStringLiteral("KWinWaylandSurfaceFlingerBackend");
+#endif
 static const QString s_virtualPlugin = QStringLiteral("KWinWaylandVirtualBackend");
 
 static QString automaticBackendSelection()
@@ -392,6 +395,11 @@ static QString automaticBackendSelection()
     if (qEnvironmentVariableIsSet("DISPLAY")) {
         return s_x11Plugin;
     }
+#if HAVE_LIBHYBRIS_EXT
+    if (qEnvironmentVariableIsSet("SURFACEFLINGER_DISPLAY")) {
+        return s_surfaceflingerPlugin;
+    }
+#endif
 #if HAVE_LIBHYBRIS
     if (qEnvironmentVariableIsSet("ANDROID_ROOT")) {
         return s_hwcomposerPlugin;
@@ -499,6 +507,9 @@ int main(int argc, char * argv[])
 #if HAVE_LIBHYBRIS
     const bool hasHwcomposerOption = hasPlugin(KWin::s_hwcomposerPlugin);
 #endif
+#if HAVE_LIBHYBRIS_EXT
+    const bool hasSurfaceFlingerOption = hasPlugin(KWin::s_surfaceflingerPlugin);
+#endif
 
     QCommandLineOption xwaylandOption(QStringLiteral("xwayland"),
                                       i18n("Start a rootless Xwayland server."));
@@ -564,6 +575,12 @@ int main(int argc, char * argv[])
     QCommandLineOption hwcomposerOption(QStringLiteral("hwcomposer"), i18n("Use libhybris hwcomposer"));
     if (hasHwcomposerOption) {
         parser.addOption(hwcomposerOption);
+    }
+#endif
+#if HAVE_LIBHYBRIS_EXT
+    QCommandLineOption surfaceflingerOption(QStringLiteral("surfaceflinger"), i18n("Use libhybris surfaceflinger"));
+    if (hasSurfaceFlingerOption) {
+        parser.addOption(surfaceflingerOption);
     }
 #endif
 #if HAVE_INPUT
@@ -690,6 +707,11 @@ int main(int argc, char * argv[])
 #if HAVE_LIBHYBRIS
     if (hasHwcomposerOption && parser.isSet(hwcomposerOption)) {
         pluginName = KWin::s_hwcomposerPlugin;
+    }
+#endif
+#if HAVE_LIBHYBRIS_EXT
+    if (hasSurfaceFlingerOption && parser.isSet(surfaceflingerOption)) {
+        pluginName = KWin::s_surfaceflingerPlugin;
     }
 #endif
     if (hasVirtualOption && parser.isSet(virtualFbOption)) {

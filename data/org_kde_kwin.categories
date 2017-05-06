@@ -6,6 +6,7 @@ libkwinxrenderutils KWin XRender utility Library
 kwin_wayland_drm KWin Wayland (DRM backend)
 kwin_wayland_framebuffer KWin Wayland (Framebuffer backend)
 kwin_wayland_hwcomposer KWin Wayland (hwcomposer backend)
+kwin_wayland_surfaceflinger KWin Wayland (surfaceflinger backend)
 kwin_wayland_backend KWin Wayland (Wayland backend)
 kwin_wayland_x11windowed KWin Wayland (X11 backend)
 kwin_platform_x11_standalone KWin X11 Standalone Platform
