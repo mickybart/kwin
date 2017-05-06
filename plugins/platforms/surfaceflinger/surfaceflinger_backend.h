@@ -105,6 +105,9 @@ Q_SIGNALS:
 
 private Q_SLOTS:
     void toggleBlankOutput();
+    void screenBrightnessChanged(int brightness) {
+        m_oldScreenBrightness = brightness;
+    }
 
 private:
     void initLights();
@@ -115,6 +118,7 @@ private:
     light_device_t *m_lights = nullptr;
     bool m_outputBlank = true;
     int m_refreshRate = 60000;
+    int m_oldScreenBrightness = 0x7f;
     QScopedPointer<BacklightInputEventFilter> m_filter;
 };
 

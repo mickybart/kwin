@@ -42,11 +42,13 @@ EglSurfaceFlingerBackend::~EglSurfaceFlingerBackend()
 
 bool EglSurfaceFlingerBackend::initializeEgl()
 {
-    EGLDisplay display = EGL_NO_DISPLAY;
+    EGLDisplay display = m_backend->sceneEglDisplay();
 
-    display = m_backend->display();
     if (display == EGL_NO_DISPLAY) {
-        return false;
+        display = m_backend->display();
+    }
+    if (display == EGL_NO_DISPLAY) {
+	return false;
     }
     setEglDisplay(display);
     return initEglAPI();

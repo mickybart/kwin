@@ -32,6 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <KWayland/Server/seat_interface.h>
 // Qt
 #include <QKeyEvent>
+#include <QDBusConnection>
 // hybris/android
 #include <hardware/hardware.h>
 #include <hardware/lights.h>
@@ -145,6 +146,13 @@ void BacklightInputEventFilter::toggleBacklight()
 SurfaceFlingerBackend::SurfaceFlingerBackend(QObject *parent)
     : Platform(parent)
 {
+    if (!QDBusConnection::sessionBus().connect(QStringLiteral("org.kde.Solid.PowerManagement"),
+                                              QStringLiteral("/org/kde/Solid/PowerManagement/Actions/BrightnessControl"),
+                                              QStringLiteral("org.kde.Solid.PowerManagement.Actions.BrightnessControl"),
+                                              QStringLiteral("brightnessChanged"), this,
+                                              SLOT(screenBrightnessChanged(int)))) {
+        qCWarning(KWIN_SURFACEFLINGER) << "Failed to connect to brightness control";
+    }
     handleOutputs();
 }
 
@@ -180,7 +188,7 @@ void SurfaceFlingerBackend::init()
     initLights();
     toggleBlankOutput();
     m_filter.reset(new BacklightInputEventFilter(this));
-    input()->prepandInputEventFilter(m_filter.data());
+    input()->prependInputEventFilter(m_filter.data());
 
     // get display configuration
     // TODO: support multiple screen (main display is 0, hdmi is 1)
@@ -264,7 +272,7 @@ void SurfaceFlingerBackend::toggleScreenBrightness()
     if (!m_lights) {
         return;
     }
-    const int brightness = m_outputBlank ? 0 : 0xFF;
+    const int brightness = m_outputBlank ? 0 : m_oldScreenBrightness;
     struct light_state_t state;
     state.flashMode = LIGHT_FLASH_NONE;
     state.brightnessMode = BRIGHTNESS_MODE_USER;
