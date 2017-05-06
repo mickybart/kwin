@@ -243,19 +243,11 @@ void SurfaceFlingerBackend::toggleBlankOutput()
     m_outputBlank = !m_outputBlank;
     toggleScreenBrightness();
     
-#if (ANDROID_VERSION_MAJOR < 5)
     if (m_outputBlank) {
         sf_blank(0);
     } else {
         sf_unblank(0);
     }
-#else
-    if (m_outputBlank) {
-        sf_set_power_mode(0, HWC_POWER_MODE_OFF);
-    } else {
-        sf_set_power_mode(0, HWC_POWER_MODE_NORMAL);
-    }
-#endif
 
     // enable/disable compositor repainting when blanked
     setOutputsEnabled(!m_outputBlank);
