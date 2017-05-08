@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // hybris/android
 #include <android-config.h>
-#include <surface_flinger_compatibility_layer.h>
+#include <hybris/surface_flinger/surface_flinger_compatibility_layer.h>
 #include <hardware/hwcomposer_defs.h>
 // needed as hwcomposer_window.h includes EGL which on non-arm includes Xlib
 #include <fixx11h.h>

@@ -50,7 +50,7 @@
 #include <linux/fb.h>
 #include <sys/ioctl.h>
 
-#include <surface_flinger_compatibility_layer.h>
+#include <hybris/surface_flinger/surface_flinger_compatibility_layer.h>
 
 //TODO:define below should be replaced by: #include <private/qmath_p.h>
 #define Q_MM_PER_INCH 25.4f

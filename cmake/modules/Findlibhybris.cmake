@@ -141,7 +141,7 @@ if(NOT WIN32)
     )
     find_path(libsf_INCLUDE_DIR
         NAMES
-            surface_flinger_compatibility_layer.h
+            hybris/surface_flinger/surface_flinger_compatibility_layer.h
         HINTS
             ${PKG_surfaceflinger_INCLUDE_DIRS}
     )
